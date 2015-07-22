@@ -1,13 +1,7 @@
 import datetime
 from sqlalchemy import create_engine, Column, DateTime, Float, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-from config import SQLALCHEMY_DATABASE_URI
-
-engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
-Session = sessionmaker(bind=engine)
-s = Session()
 Base = declarative_base()
 
 class User(Base):
@@ -31,5 +25,5 @@ class Measurement(Base):
 	timestamp = Column(DateTime, default=datetime.datetime.now)
 	ph = Column(Float)
 
-# create tables
-Base.metadata.create_all(engine)
+# # create tables (only need to do this once per server)
+# Base.metadata.create_all(engine)

@@ -1,11 +1,10 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from sqlalchemy.orm import sessionmaker
-from clearwater import app
-from models import engine, User, Measurement
+from clearwater import app, db
+from models import User, Measurement
 
 app.secret_key = 'secret_key'
-Session = sessionmaker(bind=engine)
-s = Session()
+s = db.session
 
 @app.route('/')
 def index():
