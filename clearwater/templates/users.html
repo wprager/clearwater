@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2 class="page-header">Users</h2>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Username</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in users %}
+				<tr>
+					<td>{{ loop.index }}</td>
+					<td>{{ user.username }}</td>
+					<td>TODO: put delete button here</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

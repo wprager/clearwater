@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{# TODO: use datatables jquery plugin! #}
+	<h2 class="page-header">Measurements</h2>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Time</th>
+				<th>pH</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{# TODO: support for measurements model #}
+			{% for user in users %}
+				<tr>
+					<td>{{ loop.index }}</td>
+					<td></td>
+					<td></td>
+					<td>TODO: put delete button here</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

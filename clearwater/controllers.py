@@ -36,17 +36,29 @@ def logout():
 		del session['user']
 	return redirect(url_for('index'))
 
-@app.route('/user', methods=['GET', 'POST', 'DELETE'])
+@app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def manageUsers():
 	if request.method == 'GET':
-		#TODO: show list of users
-		pass
+		users = s.query(User).all()
+		return render_template('users.html', users=users)
 	elif request.method == 'POST':
-		#TODO: store user in db
-		pass
+		u = str(request.form['username'])
+		p = str(request.form['password'])
+		user = User(u, p)
+		s.add(user)
+		s.commit()
 	else:
 		#TODO: frontend - warn user first
 		query = s.query(User).filter(User.username.in_([session['username']]))
-		result = query.first()
-		s.delete(result)
+		user = query.first()
+		s.delete(user)
 		s.commit()
+
+@app.route('/measurements', methods=['GET', 'POST', 'DELETE'])
+def manageMeasurements():
+	if request.method == 'GET':
+		return render_template('measurements.html')
+	elif request.method == 'POST':
+		pass
+	else:
+		pass

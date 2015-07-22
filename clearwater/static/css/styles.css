@@ -1,8 +1,14 @@
-#footer {
+.footer {
 	text-align: center;
 	font-size: small;
 }
 
-#logout {
-	float: right;
+.navbar {
+	border-radius: 0;
+}
+
+.form-signin {
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
 }
