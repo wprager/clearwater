@@ -1,25 +1,46 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	{# TODO: use datatables jquery plugin! #}
 	<h2 class="page-header">Measurements</h2>
-	<table class="table table-bordered table-striped">
+	
+	{# TODO: make this a modal window maybe? #}
+	<div class="dropdown">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+			Add Measurement<span class="caret"></span>
+		</a>
+		<form class="dropdown-menu" id="add-measurement-dropdown" action="/measurements" method="POST">
+			<input class="form-control" type="datetime-local" name="time" required autofocus>
+			<input class="form-control" type="number" name="ph" placeholder="pH" required>
+			<button class="btn btn-primary center-block" type="submit">Add</button>
+		</form>
+	</div>
+	
+	{# TODO: use datatables jquery plugin! #}
+	<table class="table table-bordered table-striped" id="measurements-table">
 		<thead>
 			<tr>
-				<th>#</th>
-				<th>Time</th>
+				<th class="col-md-1">#</th>
+				<th>Time (Pacific)</th>
 				<th>pH</th>
-				<th></th>
+				{% if current_user.isAdmin() %}
+					<th class="col-md-1"></th>
+				{% endif %}
 			</tr>
 		</thead>
 		<tbody>
-			{# TODO: support for measurements model #}
-			{% for user in users %}
+			{% for m in measurements %}
 				<tr>
 					<td>{{ loop.index }}</td>
-					<td></td>
-					<td></td>
-					<td>TODO: put delete button here</td>
+					<td>{{ m.timestamp.strftime("%b %d, %Y. %I:%M:%S %p").replace(' 0', ' ') }}</td>
+					<td>{{ m.ph }}</td>
+					{% if current_user.isAdmin() %}
+						<td>
+							<form id="delete-measurement" action="/measurement-delete" method="POST">
+								<input type="hidden" value="{{ m.id }}" name="measurementid">
+								<input type="submit" value="Delete" class="btn btn-danger btn-xs center-block">
+							</form>
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</tbody>

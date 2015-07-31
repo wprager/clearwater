@@ -1,12 +1,15 @@
-from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask.ext.login import LoginManager, current_user, login_required, login_user, logout_user
 from clearwater import app
 from models import User, Measurement, login_serializer
+from datetime import datetime
 import md5
 
 app.secret_key = 'secret_key'
 lm = LoginManager()
 lm.init_app(app)
+
+# TODO: create separate i18n file containing strings/flash messages
 
 # -----------------------------------------------
 # LOGIN MANAGER CONFIG
@@ -52,15 +55,15 @@ def login():
 		u = str(request.form['username'])
 		p = str(request.form['password'])
 		user = User.get(u)
+		
 		if user:
 			if user.password == hash_pass(p):
-				session['username'] = user.username
 				login_user(user, remember=('rememberme' in request.form))
 				# TODO: validate the 'next' parameter (protect from "open redirect" vulnerability)
 			else:
-				flash('Invalid password.')
+				flash('Invalid password.', 'danger')
 		else:
-			flash('Invalid username.')
+			flash('Invalid username.', 'danger')
 		
 		if request.form['next'] != 'None':
 			return redirect(str(request.form['next']))
@@ -70,32 +73,68 @@ def login():
 @app.route('/logout')
 def logout():
 	logout_user()
-	if 'username' in session:
-		del session['username']
 	return redirect(url_for('index'))
 
-@app.route('/users', methods=['GET', 'POST', 'DELETE'])
+# TODO: add /users/<int:userid> GET? for user profiles & easier edit operations?
+@app.route('/users', methods=['GET', 'POST'])
 @login_required
 def manageUsers():
 	if request.method == 'GET':
 		users = User.getAll()
 		return render_template('users.html', users=users)
 	elif request.method == 'POST':
-		u = str(request.form['username'])
-		p = str(request.form['password'])
-		user = User(u, hash_pass(p))
-		User.create(user)
-	elif request.method == 'DELETE':
-		#TODO: frontend - warn user first
-		user = User.get(session['username'])
-		User.delete(user)
+		if not current_user.isAdmin():
+			flash('You are not allowed to perform that action.', 'danger')
+			return redirect(url_for('manageUsers'))
+		else:
+			u = str(request.form['username'])
+			p = str(request.form['password'])
+			user = User.get(u)
+			if user:
+				flash('Username already taken', 'danger')
+			else:
+				User.create(User(u, hash_pass(p)))
+				flash('Successfully created user: "' + u + '"', 'success')
+		return redirect(url_for('manageUsers'))
 
-@app.route('/measurements', methods=['GET', 'POST', 'DELETE'])
+@app.route('/user-delete', methods=['POST'])
+@login_required
+def deleteUser():
+	if not current_user.isAdmin():
+		flash('You are not allowed to perform that action.', 'danger')
+	else:
+		userid = unicode(request.form['userid'])
+		User.delete(User.get(userid))
+		flash('Successfully deleted user: "' + user.username + '"', 'success')
+	return redirect(url_for('manageUsers'))
+
+# TODO: add /measurements/<int:measurementid> edits?
+@app.route('/measurements', methods=['GET', 'POST'])
 @login_required
 def manageMeasurements():
 	if request.method == 'GET':
-		return render_template('measurements.html')
+		measurements = Measurement.getAll()
+		return render_template('measurements.html', measurements=measurements)
 	elif request.method == 'POST':
-		pass
-	elif request.method == 'DELETE':
-		pass
+		# TODO: add ways to do this in bulk - csv upload? parse json info over network?
+		t = request.form['time']
+		t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
+		p = str(request.form['ph'])
+		measurement = Measurement.get(t)
+		if measurement:
+			flash('Measurement already taken at that time', 'danger')
+		else:
+			Measurement.create(Measurement(t, p))
+			flash('Successfully created measurement', 'success')
+		return redirect(url_for('manageMeasurements'))
+
+@app.route('/measurement-delete', methods=['POST'])
+@login_required
+def deleteMeasurement():
+	if not current_user.isAdmin():
+		flash('You are not allowed to perform that action.', 'danger')
+	else:
+		measurementid = unicode(request.form['measurementid'])
+		Measurement.delete(Measurement.get(measurementid))
+		flash('Successfully deleted measurement.', 'success')
+	return redirect(url_for('manageMeasurements'))

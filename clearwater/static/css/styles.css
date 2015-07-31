@@ -1,14 +1,46 @@
-.footer {
+/* 
+* GLOBAL
+*/
+.flashes {
+	list-style-type: none;
+	padding: 0;
 	text-align: center;
-	font-size: small;
+}
+
+#flash {
+	width: 300px;
 }
 
 .navbar {
 	border-radius: 0;
 }
 
+.footer {
+	text-align: center;
+	font-size: small;
+}
+
+/*
+* LOGIN
+*/
 .form-signin {
 	max-width: 330px;
 	padding: 15px;
 	margin: 0 auto;
+}
+
+/*
+* USERS & MEASUREMENTS
+*/
+#add-user-dropdown, #add-measurement-dropdown {
+	padding: 15px;
+	margin: 0 25px;
+}
+
+#add-user-dropdown input, #add-measurement-dropdown input {
+	margin-bottom: 10px;
+}
+
+#users-table, #measurements-table {
+	margin-top: 15px;
 }

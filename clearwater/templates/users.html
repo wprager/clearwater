@@ -2,12 +2,30 @@
 
 {% block content %}
 	<h2 class="page-header">Users</h2>
-	<table class="table table-bordered table-striped">
+	
+	{% if current_user.isAdmin() %}
+	{# TODO: make this a modal window maybe? #}
+		<div class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+				Add User<span class="caret"></span>
+			</a>
+			<form class="dropdown-menu" id="add-user-dropdown" action="/users" method="POST">
+				<input class="form-control" type="username" name="username" placeholder="Username" required autofocus>
+				<input class="form-control" type="password" name="password" placeholder="Password" required>
+				<button class="btn btn-primary center-block" type="submit">Add</button>
+			</form>
+		</div>
+	{% endif %}
+	
+	{# TODO: use datatables jquery plugin! #}
+	<table class="table table-bordered table-striped" id="users-table">
 		<thead>
 			<tr>
-				<th>#</th>
+				<th class="col-md-1">#</th>
 				<th>Username</th>
-				<th></th>
+				{% if current_user.isAdmin() %}
+					<th class="col-md-1"></th>
+				{% endif %}
 			</tr>
 		</thead>
 		<tbody>
@@ -15,7 +33,16 @@
 				<tr>
 					<td>{{ loop.index }}</td>
 					<td>{{ user.username }}</td>
-					<td></td>
+					{% if current_user.isAdmin() %}
+						<td>
+							{% if not user.isAdmin() %}
+								<form id="delete-user" action="/user-delete" method="POST">
+									<input type="hidden" value="{{ user.id }}" name="userid">
+									<input type="submit" value="Delete" class="btn btn-danger btn-xs center-block">
+								</form>
+							{% endif %}
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</tbody>
