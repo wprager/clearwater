@@ -1,3 +1,3 @@
 setTimeout(function() {
 	$("#flash").fadeOut()
-}, 3000);
+}, 10000);

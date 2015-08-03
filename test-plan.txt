@@ -1,0 +1,50 @@
+----------------------------------
+GLOBAL
+----------------------------------
+flashes are centered
+flashes are fixed width
+alerts fade out after 10 seconds
+alerts are close-able by clicking on the 'x'
+all pages (except log in page) have navbar & footer
+cookie lasts 14 days (can stay logged in with remember me for 14 days?)
+
+----------------------------------
+LOGIN
+----------------------------------
+logout redirects to '/'
+default alert is "info" - blue
+passwords in db are scrambled
+when trying to access internal url anonymously, redirects to login page
+when trying to access internal url anonymously, logging in redirects back to originally attempted visited URL
+visiting '/login' redirects to '/'
+on login form, wrong username produces 'invalid username' flash
+on login form, wrong password produces 'invalid password' flash
+login when not checking remember me logs user out after quitting browser
+login when checking remember me keeps user logged in after quitting browser and revisiting site
+
+----------------------------------
+USERS
+----------------------------------
+user dropdown creation form has padding
+creating a user when not logged in as admin should produce 'not allowed' flash
+non admin shouldn't be able to see user creation form
+on user creation form, existing username produces 'username taken' flash
+on user creation form, creation success produces 'creation success' flash
+on user creation form, both fields are required
+deleting a user when not logged in as admin should produce 'not allowed' flash
+non admin shouldn't see user delete button
+on user deletion, a success produces 'deletion success' flash
+
+----------------------------------
+MEASUREMENTS
+----------------------------------
+measurement dropdown creation form has padding
+all users should be able to see measurement creation form
+on measurement creation form, existing time produces 'time taken' flash
+on measurement creation form, creation success produces 'creation success' flash
+on measurement creation form, both fields are required
+on measurement creation form, time field must to be "%Y-%m-%dT%H:%M:%S" format, else produces 'invalid format' flash
+on measurement creation form, pH should be able to accept floats
+deleting a measurement when not logged in as admin should produce 'not allowed' flash
+non admin shouldn't see measurement delete button
+on measurement deletion, a success produces 'deletion success' flash

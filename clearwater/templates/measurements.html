@@ -9,8 +9,8 @@
 			Add Measurement<span class="caret"></span>
 		</a>
 		<form class="dropdown-menu" id="add-measurement-dropdown" action="/measurements" method="POST">
-			<input class="form-control" type="datetime-local" name="time" required autofocus>
-			<input class="form-control" type="number" name="ph" placeholder="pH" required>
+			<input class="form-control" type="datetime-local" step="1" name="time" required autofocus>
+			<input class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
 			<button class="btn btn-primary center-block" type="submit">Add</button>
 		</form>
 	</div>

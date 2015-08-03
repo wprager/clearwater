@@ -15,6 +15,7 @@ lm.init_app(app)
 # LOGIN MANAGER CONFIG
 # -----------------------------------------------
 lm.login_view = 'index'
+lm.login_message_category = 'info'
 # lm.refresh_view = 'reauthenticate'
 
 @lm.user_loader
@@ -118,7 +119,12 @@ def manageMeasurements():
 	elif request.method == 'POST':
 		# TODO: add ways to do this in bulk - csv upload? parse json info over network?
 		t = request.form['time']
-		t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
+		try:
+			t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+		except ValueError:
+			flash('Invalid date-time format. Valid format is "<year>-<month>-<day>T<hour>:<minute>:<second>"', 'danger')
+			return redirect(url_for('manageMeasurements'))
+		
 		p = str(request.form['ph'])
 		measurement = Measurement.get(t)
 		if measurement:
