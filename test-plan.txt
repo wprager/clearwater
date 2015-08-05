@@ -1,30 +1,33 @@
-----------------------------------
+-----------------------------------------------
 GLOBAL
-----------------------------------
+-----------------------------------------------
 flashes are centered
 flashes are fixed width
 alerts fade out after 10 seconds
 alerts are close-able by clicking on the 'x'
 all pages (except log in page) have navbar & footer
 cookie lasts 14 days (can stay logged in with remember me for 14 days?)
+visiting an unknown URL renders the 404 page
+anonymous users don't see the "signed in as" menu
 
-----------------------------------
+-----------------------------------------------
 LOGIN
-----------------------------------
+-----------------------------------------------
 logout redirects to '/'
 default alert is "info" - blue
 passwords in db are scrambled
 when trying to access internal url anonymously, redirects to login page
 when trying to access internal url anonymously, logging in redirects back to originally attempted visited URL
+when trying to manually input the 'next' parameter to an external URL, logging in renders the 400 page
 visiting '/login' redirects to '/'
 on login form, wrong username produces 'invalid username' flash
 on login form, wrong password produces 'invalid password' flash
 login when not checking remember me logs user out after quitting browser
 login when checking remember me keeps user logged in after quitting browser and revisiting site
 
-----------------------------------
+-----------------------------------------------
 USERS
-----------------------------------
+-----------------------------------------------
 user dropdown creation form has padding
 creating a user when not logged in as admin should produce 'not allowed' flash
 non admin shouldn't be able to see user creation form
@@ -35,9 +38,9 @@ deleting a user when not logged in as admin should produce 'not allowed' flash
 non admin shouldn't see user delete button
 on user deletion, a success produces 'deletion success' flash
 
-----------------------------------
+-----------------------------------------------
 MEASUREMENTS
-----------------------------------
+-----------------------------------------------
 measurement dropdown creation form has padding
 all users should be able to see measurement creation form
 on measurement creation form, existing time produces 'time taken' flash
