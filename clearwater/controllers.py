@@ -11,6 +11,8 @@ app.secret_key = 'secret_key'
 lm = LoginManager()
 lm.init_app(app)
 
+# TODO: allow users to register?
+
 # -----------------------------------------------
 # LOGIN MANAGER CONFIG
 # -----------------------------------------------
@@ -70,6 +72,8 @@ def login():
 		else:
 			flash(constants.INVALID_USERNAME, 'danger')
 		
+		# may still be vulnerable to open redirects (try http://localhost:5000/?next=////google.com)
+		# check http://homakov.blogspot.com/2014/01/evolution-of-open-redirect-vulnerability.html
 		if is_safe_url(request.form['next']):
 			return redirect(request.form['next'] or url_for('index'))
 		else:
