@@ -19,7 +19,7 @@ USER_DELETE_SUCCESS = 'Successfully deleted user: "%s"'
 # -----------------------------------------------
 # MEASUREMENT
 # -----------------------------------------------
-INVALID_DATE = 'Invalid date-time format. Valid format is "<year>-<month>-<day>T<hour>:<minute>:<second>."'
+INVALID_DATE = 'Invalid date-time format. Valid format is "%Y-%m-%dT%H:%M:%S" or "%Y-%m-%dT%H:%M."'
 TIME_TAKEN = 'Measurement already taken at that time'
 MEASUREMENT_CREATE_SUCCESS = 'Successfully created measurement'
 MEASUREMENT_DELETE_SUCCESS = 'Successfully deleted measurement'

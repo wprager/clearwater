@@ -20,8 +20,9 @@
 		<thead>
 			<tr>
 				<th class="col-md-1">#</th>
+				<th>Created by</th>
 				<th>Time (Pacific)</th>
-				<th>pH</th>
+				<th class="col-md-1">pH</th>
 				{% if current_user.isAdmin() %}
 					<th class="col-md-1"></th>
 				{% endif %}
@@ -31,6 +32,7 @@
 			{% for m in measurements %}
 				<tr>
 					<td>{{ loop.index }}</td>
+					<td>{{ users[(m.user_id)] }}</td>
 					<td>{{ m.timestamp.strftime("%b %d, %Y. %I:%M:%S %p").replace(' 0', ' ') }}</td>
 					<td>{{ m.ph }}</td>
 					{% if current_user.isAdmin() %}

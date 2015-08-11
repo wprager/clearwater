@@ -2,12 +2,14 @@ from clearwater import app, db
 import datetime
 from flask.ext.login import UserMixin
 from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy import create_engine, Column, DateTime, Float, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 login_serializer = URLSafeTimedSerializer(app.secret_key)
 s = db.session
+
+# TODO: figure out how to do a db migration (schema update) without losing all data
 
 class User(Base, UserMixin):
 	__tablename__ = 'users'
@@ -15,10 +17,12 @@ class User(Base, UserMixin):
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
 	password = Column(String)
+	measurements = db.relationship('Measurement', backref=db.backref('user', lazy='joined'), lazy='dynamic')
 	
 	def __init__(self, username, password):
 		self.username = username
 		self.password = password
+		self.measurements = []
 	
 	def get_auth_token(self):
 		data = [self.username, self.password]
@@ -53,15 +57,16 @@ class User(Base, UserMixin):
 	def __repr__(self):
 		return 'User: %r' % self.username
 
-# TODO: should measurements be owned by a user?? do we want to keep track of that
 class Measurement(Base):
 	__tablename__ = 'measurements'
 	
 	id = Column(Integer, primary_key=True)
 	timestamp = Column(DateTime, default=datetime.datetime.now, unique=True)
 	ph = Column(Float)
+	user_id = Column(Integer, ForeignKey('users.id'))
 	
-	def __init__(self, timestamp, ph):
+	def __init__(self, user_id, timestamp, ph):
+		self.user_id = user_id
 		self.timestamp = timestamp
 		self.ph = ph
 	

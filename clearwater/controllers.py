@@ -124,22 +124,28 @@ def deleteUser():
 def manageMeasurements():
 	if request.method == 'GET':
 		measurements = Measurement.getAll()
-		return render_template('measurements.html', measurements=measurements)
+		users = {}
+		for user in User.getAll():
+			users[user.id] = user.username
+		return render_template('measurements.html', measurements=measurements, users=users)
 	elif request.method == 'POST':
 		# TODO: add ways to do this in bulk - csv upload? parse json info over network?
 		t = request.form['time']
 		try:
 			t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
 		except ValueError:
-			flash(constants.INVALID_DATE, 'danger')
-			return redirect(url_for('manageMeasurements'))
+			try:
+				t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
+			except ValueError:
+				flash(constants.INVALID_DATE, 'danger')
+				return redirect(url_for('manageMeasurements'))
 		
 		p = str(request.form['ph'])
 		measurement = Measurement.get(t)
 		if measurement:
 			flash(constants.TIME_TAKEN, 'danger')
 		else:
-			Measurement.create(Measurement(t, p))
+			Measurement.create(Measurement(current_user.id, t, p))
 			flash(constants.MEASUREMENT_CREATE_SUCCESS, 'success')
 		return redirect(url_for('manageMeasurements'))
 
