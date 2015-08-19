@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% set active_page = 'users' %}
+
 {% block content %}
 	<h2 class="page-header">Users</h2>
 	
@@ -9,7 +11,7 @@
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
 				Add User<span class="caret"></span>
 			</a>
-			<form class="dropdown-menu" id="add-user-dropdown" action="/users" method="POST">
+			<form class="dropdown-menu dropdown-form" action="/users" method="POST">
 				<input class="form-control" type="username" name="username" placeholder="Username" required autofocus>
 				<input class="form-control" type="password" name="password" placeholder="Password" required>
 				<button class="btn btn-primary center-block" type="submit">Add</button>

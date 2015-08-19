@@ -6,9 +6,12 @@ flashes are fixed width
 alerts fade out after 10 seconds
 alerts are close-able by clicking on the 'x'
 all pages (except log in page) have navbar & footer
+footer has top margin so it's not directly adjacent to content
 cookie lasts 14 days (can stay logged in with remember me for 14 days?)
 visiting an unknown URL renders the 404 page
 anonymous users don't see the "signed in as" menu
+nav tabs should be active when on its respective page
+nav tabs should be all inactive when on a page not in the nav
 
 -----------------------------------------------
 LOGIN
@@ -24,6 +27,11 @@ on login form, wrong username produces 'invalid username' flash
 on login form, wrong password produces 'invalid password' flash
 login when not checking remember me logs user out after quitting browser
 login when checking remember me keeps user logged in after quitting browser and revisiting site
+
+-----------------------------------------------
+HOME
+-----------------------------------------------
+image appears and is centered
 
 -----------------------------------------------
 USERS
@@ -48,6 +56,23 @@ on measurement creation form, creation success produces 'creation success' flash
 on measurement creation form, both fields are required
 on measurement creation form, time field must to be "%Y-%m-%dT%H:%M:%S" format, else produces 'invalid format' flash
 on measurement creation form, pH should be able to accept floats
+on measurement creation form, time field should be able to accept 00 seconds
 deleting a measurement when not logged in as admin should produce 'not allowed' flash
 non admin shouldn't see measurement delete button
 on measurement deletion, a success produces 'deletion success' flash
+uploading an error-free csv adds the measurements to the table and produces 'upload success' flash
+uploading a non-csv file produces 'invalid csv' flash
+uploading an improper file name produces 'invalid csv' flash (e.g. ../home/test.csv)
+uploading a file over 16MB renders the 413 page
+uploading a csv with improper headers produces 'invalid header' flash
+uploading a csv with malformatted lines adds these lines to 'bad syntax' flash
+	examples:
+		more than 2 columns
+		less than 2 columns
+		empty row
+		invalid date
+		invalid time
+		invalid datetime format
+		invalid pH number
+uploading a csv with measurements at already taken times adds these lines to 'time taken' flash
+uploading a csv with malformatted lines and measurements at already taken times still succeeds in adding the valid entries

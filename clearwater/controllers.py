@@ -1,11 +1,16 @@
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask.ext.login import LoginManager, current_user, login_required, login_user, logout_user
+
 from clearwater import app
 import constants
 from models import User, Measurement, login_serializer
+
+import csv
 from datetime import datetime
+import json
 import md5
 from urlparse import urlparse, urljoin
+from werkzeug import secure_filename
 
 app.secret_key = 'secret_key'
 lm = LoginManager()
@@ -103,7 +108,7 @@ def manageUsers():
 				flash(constants.USERNAME_TAKEN, 'danger')
 			else:
 				User.create(User(u, hash_pass(p)))
-				flash(constants.USER_CREATE_SUCCESS % u, 'success')
+				flash(constants.USER_CREATE_SUCCESS.format(u), 'success')
 		return redirect(url_for('manageUsers'))
 
 @app.route('/user-delete', methods=['POST'])
@@ -115,7 +120,7 @@ def deleteUser():
 		userid = unicode(request.form['userid'])
 		user = User.get(userid)
 		User.delete(user)
-		flash(constants.USER_DELETE_SUCCESS % user.username, 'success')
+		flash(constants.USER_DELETE_SUCCESS.format(user.username), 'success')
 	return redirect(url_for('manageUsers'))
 
 # TODO: add /measurements/<int:measurementid> edits?
@@ -140,7 +145,7 @@ def manageMeasurements():
 				flash(constants.INVALID_DATE, 'danger')
 				return redirect(url_for('manageMeasurements'))
 		
-		p = str(request.form['ph'])
+		p = float(request.form['ph'])
 		measurement = Measurement.get(t)
 		if measurement:
 			flash(constants.TIME_TAKEN, 'danger')
@@ -160,6 +165,60 @@ def deleteMeasurement():
 		flash(constants.MEASUREMENT_DELETE_SUCCESS, 'success')
 	return redirect(url_for('manageMeasurements'))
 
+@app.route('/csv-upload', methods=['POST'])
+@login_required
+def csvUpload():
+	file = request.files['csv']
+	badSyntax = []
+	timeTaken = []
+	if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() == 'csv':
+		filename = secure_filename(file.filename)
+		try:
+			with open(filename, 'r') as csvFile:
+				reader = csv.reader(csvFile)
+				headers = reader.next()
+				if len(headers) == 2 and headers[0].lower() == 'time' and headers[1].lower() == 'ph':
+					for row in reader:
+						if len(row) == 2:
+							t = row[0]
+							try:
+								t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+							except ValueError:
+								try:
+									t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
+								except ValueError:
+									badSyntax.append(reader.line_num)
+									continue
+							
+							p = row[1]
+							try:
+								p = float(p)
+							except ValueError:
+								badSyntax.append(reader.line_num)
+								continue
+							
+							measurement = Measurement.get(t)
+							if measurement:
+								timeTaken.append(reader.line_num)
+								continue
+							Measurement.create(Measurement(current_user.id, t, p))
+						else:
+							badSyntax.append(reader.line_num)
+					
+					flash(constants.CSV_UPLOAD_SUCCESS, 'success')
+					if badSyntax:
+						flash(constants.CSV_BAD_SYNTAX.format(json.dumps(badSyntax)), 'info')
+					if timeTaken:
+						flash(constants.CSV_TIME_TAKEN.format(json.dumps(timeTaken)), 'info')
+				else:
+					flash(constants.INVALID_CSV_HEADER, 'danger')
+		except IOError:
+			flash(constants.INVALID_CSV_FILE, 'danger')
+	else:
+		flash(constants.INVALID_CSV_FILE, 'danger')
+	
+	return redirect(url_for('manageMeasurements'))
+
 
 @app.errorhandler(400)
 def badRequest(error):
@@ -168,3 +227,7 @@ def badRequest(error):
 @app.errorhandler(404)
 def notFound(error):
 	return render_template('404.html'), 404
+
+@app.errorhandler(413)
+def requestTooLarge(error):
+	return render_template('413.html'), 413

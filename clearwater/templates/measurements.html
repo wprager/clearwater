@@ -1,19 +1,32 @@
 {% extends 'base.html' %}
 
+{% set active_page = 'measurements' %}
+
 {% block content %}
 	<h2 class="page-header">Measurements</h2>
 	
 	{# TODO: make this a modal window maybe? #}
-	<div class="dropdown">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-			Add Measurement<span class="caret"></span>
-		</a>
-		<form class="dropdown-menu" id="add-measurement-dropdown" action="/measurements" method="POST">
-			{# TODO: make datetime more browser/user friendly #}
-			<input class="form-control" type="datetime-local" step="1" name="time" required autofocus>
-			<input class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
-			<button class="btn btn-primary center-block" type="submit">Add</button>
-		</form>
+	<div class="container-fluid">
+		<div class="dropdown pull-left">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+				Add Measurement<span class="caret"></span>
+			</a>
+			<form class="dropdown-menu dropdown-form" action="/measurements" method="POST">
+				{# TODO: make datetime more browser/user friendly #}
+				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus>
+				<input class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
+				<button class="btn btn-primary center-block" type="submit">Add</button>
+			</form>
+		</div>
+		<div class="dropdown pull-right">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+				Upload CSV<span class="caret"></span>
+			</a>
+			<form class="dropdown-menu dropdown-form" id="upload-csv-dropdown" action="/csv-upload" method="POST" enctype="multipart/form-data">
+				<input type="file" name="csv" required>
+				<button class="btn btn-primary center-block" type="submit">Upload</button>
+			</form>
+		</div>
 	</div>
 	
 	{# TODO: use datatables jquery plugin! #}

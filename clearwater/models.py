@@ -55,7 +55,7 @@ class User(Base, UserMixin):
 		s.commit()
 	
 	def __repr__(self):
-		return 'User: %r' % self.username
+		return 'User: {0}'.format(self.username)
 
 class Measurement(Base):
 	__tablename__ = 'measurements'
@@ -92,7 +92,7 @@ class Measurement(Base):
 		s.commit()
 	
 	def __repr__(self):
-		return 'Measurement: Time: %r, pH: %r' % (self.timestamp, self.ph)
+		return 'Measurement: Time: {0}, pH: {1}'.format(self.timestamp, self.ph)
 
 # # create tables (only need to do this once per server)
 # Base.metadata.create_all(engine)
