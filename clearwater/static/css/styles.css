@@ -50,6 +50,10 @@
 	margin-bottom: 10px;
 }
 
-#users-table, #measurements-table {
+.dataTables_wrapper {
 	margin-top: 15px;
+}
+
+.dataTables_filter input[type=search] {
+	-webkit-appearance: searchfield;
 }

@@ -1,5 +1,29 @@
 {% extends 'base.html' %}
 
+{% block head %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+	<script src="/static/js/jquery.dataTables.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#users-table').DataTable( {
+				"autoWidth": false,
+				"columnDefs": [ {
+					"targets": [2],
+					"searchable": false,
+					"orderable": false
+				}, {
+					"targets": [0],
+					"visible": false
+				} ],
+				"lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+				"pageLength": 10,
+				"pagingType": "full_numbers"
+			});
+		});
+	</script>
+{% endblock %}
+
 {% set active_page = 'users' %}
 
 {% block content %}
@@ -7,23 +31,24 @@
 	
 	{% if current_user.isAdmin() %}
 	{# TODO: make this a modal window maybe? #}
-		<div class="dropdown">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-				Add User<span class="caret"></span>
-			</a>
-			<form class="dropdown-menu dropdown-form" action="/users" method="POST">
-				<input class="form-control" type="username" name="username" placeholder="Username" required autofocus>
-				<input class="form-control" type="password" name="password" placeholder="Password" required>
-				<button class="btn btn-primary center-block" type="submit">Add</button>
-			</form>
+		<div class="container-fluid">
+			<div class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+					Add User<span class="caret"></span>
+				</a>
+				<form class="dropdown-menu dropdown-form" action="/users" method="POST">
+					<input class="form-control" type="username" name="username" placeholder="Username" required autofocus>
+					<input class="form-control" type="password" name="password" placeholder="Password" required>
+					<button class="btn btn-primary center-block" type="submit">Add</button>
+				</form>
+			</div>
 		</div>
 	{% endif %}
 	
-	{# TODO: use datatables jquery plugin! #}
-	<table class="table table-bordered table-striped" id="users-table">
+	<table class="display" id="users-table" cellspacing="0" width="100%">
 		<thead>
 			<tr>
-				<th class="col-md-1">#</th>
+				<th class="col-md-1">ID</th>
 				<th>Username</th>
 				{% if current_user.isAdmin() %}
 					<th class="col-md-1"></th>
@@ -33,7 +58,7 @@
 		<tbody>
 			{% for user in users %}
 				<tr>
-					<td>{{ loop.index }}</td>
+					<td>{{ user.id }}</td>
 					<td>{{ user.username }}</td>
 					{% if current_user.isAdmin() %}
 						<td>

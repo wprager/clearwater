@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
 
+{% block head %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+	<script src="/static/js/jquery.dataTables.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#measurements-table').DataTable( {
+				"autoWidth": false,
+				"columnDefs": [ {
+					"targets": [4],
+					"searchable": false,
+					"orderable": false
+				}, {
+					"targets": [0],
+					"visible": false
+				} ],
+				"lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+				"order": [[1, "desc"]],
+				"pageLength": 10,
+				"pagingType": "full_numbers"
+			});
+		});
+	</script>
+{% endblock %}
+
 {% set active_page = 'measurements' %}
 
 {% block content %}
@@ -12,7 +37,7 @@
 				Add Measurement<span class="caret"></span>
 			</a>
 			<form class="dropdown-menu dropdown-form" action="/measurements" method="POST">
-				{# TODO: make datetime more browser/user friendly #}
+				{# TODO: make datetime more browser/user friendly - multi select fields #}
 				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus>
 				<input class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
 				<button class="btn btn-primary center-block" type="submit">Add</button>
@@ -29,13 +54,12 @@
 		</div>
 	</div>
 	
-	{# TODO: use datatables jquery plugin! #}
-	<table class="table table-bordered table-striped" id="measurements-table">
+	<table class="display" id="measurements-table">
 		<thead>
 			<tr>
-				<th class="col-md-1">#</th>
-				<th>Created by</th>
+				<th class="col-md-1">ID</th>
 				<th>Time (Pacific)</th>
+				<th>Created by</th>
 				<th class="col-md-1">pH</th>
 				{% if current_user.isAdmin() %}
 					<th class="col-md-1"></th>
@@ -45,9 +69,9 @@
 		<tbody>
 			{% for m in measurements %}
 				<tr>
-					<td>{{ loop.index }}</td>
-					<td>{{ users[(m.user_id)] }}</td>
+					<td>{{ m.id }}</td>
 					<td>{{ m.timestamp.strftime("%b %d, %Y. %I:%M:%S %p").replace(' 0', ' ') }}</td>
+					<td>{{ users[(m.user_id)] }}</td>
 					<td>{{ m.ph }}</td>
 					{% if current_user.isAdmin() %}
 						<td>

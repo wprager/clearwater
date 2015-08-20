@@ -134,7 +134,6 @@ def manageMeasurements():
 			users[user.id] = user.username
 		return render_template('measurements.html', measurements=measurements, users=users)
 	elif request.method == 'POST':
-		# TODO: add ways to do this in bulk - csv upload? parse json info over network?
 		t = request.form['time']
 		try:
 			t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
