@@ -9,10 +9,12 @@
 			$('#measurements-table').DataTable( {
 				"autoWidth": false,
 				"columnDefs": [ {
+				{% if current_user.isAdmin() %}
 					"targets": [4],
 					"searchable": false,
 					"orderable": false
 				}, {
+				{% endif %}
 					"targets": [0],
 					"visible": false
 				} ],

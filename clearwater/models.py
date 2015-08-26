@@ -1,4 +1,5 @@
 from clearwater import app, db
+import constants
 import datetime
 from flask.ext.login import UserMixin
 from itsdangerous import URLSafeTimedSerializer
@@ -9,19 +10,19 @@ Base = declarative_base()
 login_serializer = URLSafeTimedSerializer(app.secret_key)
 s = db.session
 
-# TODO: figure out how to do a db migration (schema update) without losing all data
-
 class User(Base, UserMixin):
 	__tablename__ = 'users'
 	
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
 	password = Column(String)
+	status = Column(Integer, default=constants.USER)
 	measurements = db.relationship('Measurement', backref=db.backref('user', lazy='joined'), lazy='dynamic')
 	
-	def __init__(self, username, password):
+	def __init__(self, username, password, status=constants.USER):
 		self.username = username
 		self.password = password
+		self.status = status
 		self.measurements = []
 	
 	def get_auth_token(self):
@@ -29,9 +30,8 @@ class User(Base, UserMixin):
 		return login_serializer.dumps(data)
 		# return make_secure_token(self.username, self.password)
 	
-	# TODO: find a better implementation for this
 	def isAdmin(self):
-		return self.username == 'admin'
+		return self.status == constants.ADMIN;
 	
 	@staticmethod
 	def get(data):
@@ -93,6 +93,3 @@ class Measurement(Base):
 	
 	def __repr__(self):
 		return 'Measurement: Time: {0}, pH: {1}'.format(self.timestamp, self.ph)
-
-# # create tables (only need to do this once per server)
-# Base.metadata.create_all(engine)

@@ -28,3 +28,9 @@ CSV_TIME_TAKEN = 'Skipped the following lines due to a measurement already exist
 TIME_TAKEN = 'Measurement already taken at that time'
 MEASUREMENT_CREATE_SUCCESS = 'Successfully created measurement'
 MEASUREMENT_DELETE_SUCCESS = 'Successfully deleted measurement'
+
+# -----------------------------------------------
+# STATICS
+# -----------------------------------------------
+USER = 0
+ADMIN = 1

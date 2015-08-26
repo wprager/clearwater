@@ -6,6 +6,6 @@ from sqlalchemy import create_engine
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
 Base.metadata.create_all(engine)
-admin = User('admin', hash_pass('admin'))
+admin = User('admin', hash_pass('admin'), 1)
 db.session.add(admin)
 db.session.commit()
