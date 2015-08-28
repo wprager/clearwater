@@ -19,6 +19,7 @@ USER_DELETE_SUCCESS = 'Successfully deleted user: "{0}"'
 # -----------------------------------------------
 # MEASUREMENT
 # -----------------------------------------------
+DATE_OUT_OF_RANGE = 'Invalid date. Please check that what you entered was an existing date.'
 INVALID_DATE = 'Invalid date-time format. Valid format is "%Y-%m-%dT%H:%M:%S" or "%Y-%m-%dT%H:%M."'
 INVALID_CSV_FILE = 'Invalid file format. Must be a valid CSV.'
 INVALID_CSV_HEADER = 'Invalid file headers. Must be "Time" and "pH."'

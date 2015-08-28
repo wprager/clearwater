@@ -57,6 +57,8 @@ on measurement creation form, both fields are required
 on measurement creation form, time field must to be "%Y-%m-%dT%H:%M:%S" format, else produces 'invalid format' flash
 on measurement creation form, pH should be able to accept floats
 on measurement creation form, time field should be able to accept 00 seconds
+on measurement creation form, invalid date produces 'invalid date' flash (e.g. Feb 30th)
+on measurement creation form, try various dates...
 deleting a measurement when not logged in as admin should produce 'not allowed' flash
 non admin shouldn't see measurement delete button
 on measurement deletion, a success produces 'deletion success' flash

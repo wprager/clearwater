@@ -28,6 +28,7 @@
 {% endblock %}
 
 {% set active_page = 'measurements' %}
+{% set months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
 
 {% block content %}
 	<h2 class="page-header">Measurements</h2>
@@ -38,10 +39,57 @@
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
 				Add Measurement<span class="caret"></span>
 			</a>
-			<form class="dropdown-menu dropdown-form" action="/measurements" method="POST">
-				{# TODO: make datetime more browser/user friendly - multi select fields #}
-				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus>
-				<input class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
+			<form id="measurement-form" class="dropdown-menu dropdown-form" action="/measurements" method="POST">
+				<div>
+					<label for="month">Date: </label>
+					<select id="month" name="month" id="month" onchange="" size="1" required autofocus>
+						<option value="">--</option>
+						{% for month in months %}
+							<option value="{{ '%02d' % (loop.index,) }}">{{ month }}</option>
+						{% endfor %}
+					</select>
+					<select name="day" id="day" onchange="" size="1" required>
+						<option value="">--</option>
+						{% for x in range(1,32) %}
+							<option value="{{ '%02d' % (x,) }}">{{ x }}</option>
+						{% endfor %}
+					</select> , 
+					<select name="year" id="year" onchange="" size="1" required>
+						<option value="">--</option>
+						{% for x in range(2000,2026) %}
+							<option value="{{ x }}">{{ x }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div>
+					<label for="hour">Time: </label>
+					<select id="hour" name="hour" id="hour" onchange="" size="1" required>
+						<option value="">--</option>
+						{% for x in range(1,13) %}
+							<option value="{{ '%02d' % (x,) }}">{{ x }}</option>
+						{% endfor %}
+					</select> : 
+					<select name="minute" id="minute" onchange="" size="1" required>
+						<option value="">--</option>
+						{% for x in range(60) %}
+							<option value="{{ '%02d' % (x,) }}">{{ '%02d' % (x,) }}</option>
+						{% endfor %}
+					</select> : 
+					<select name="second" id="second" onchange="" size="1" required>
+						<option value="">--</option>
+						{% for x in range(60) %}
+							<option value="{{ '%02d' % (x,) }}">{{ '%02d' % (x,) }}</option>
+						{% endfor %}
+					</select>
+					<select name="ampm" id="ampm" onchange="" size="1" required>
+						<option value="am">AM</option>
+						<option value="pm">PM</option>
+					</select>
+				</div>
+				{# TODO: detect if datetime-local works and show this if so:
+				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus> #}
+				<label for="ph">pH</label>
+				<input id="ph" class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
 				<button class="btn btn-primary center-block" type="submit">Add</button>
 			</form>
 		</div>
@@ -72,7 +120,7 @@
 			{% for m in measurements %}
 				<tr>
 					<td>{{ m.id }}</td>
-					<td>{{ m.timestamp.strftime("%b %d, %Y. %I:%M:%S %p").replace(' 0', ' ') }}</td>
+					<td>{{ m.timestamp.strftime("%b %d, %Y, %I:%M:%S %p").replace(' 0', ' ') }}</td>
 					<td>{{ users[(m.user_id)] }}</td>
 					<td>{{ m.ph }}</td>
 					{% if current_user.isAdmin() %}

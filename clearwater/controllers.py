@@ -134,15 +134,32 @@ def manageMeasurements():
 			users[user.id] = user.username
 		return render_template('measurements.html', measurements=measurements, users=users)
 	elif request.method == 'POST':
-		t = request.form['time']
+		month = request.form['month']
+		day = request.form['day']
+		year = request.form['year']
+		hour = request.form['hour']
+		minute = request.form['minute']
+		second = request.form['second']
+		ampm = request.form['ampm']
+		if ampm == 'am' and hour == '12':
+			hour = '00'
+		elif ampm == 'pm' and hour != '12':
+			hour = str(int(hour) + 12)
 		try:
-			t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+			t = datetime.strptime(' '.join([month, day, year, hour, minute, second]), '%m %d %Y %H %M %S')
 		except ValueError:
-			try:
-				t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
-			except ValueError:
-				flash(constants.INVALID_DATE, 'danger')
-				return redirect(url_for('manageMeasurements'))
+			flash(constants.DATE_OUT_OF_RANGE, 'danger')
+			return redirect(url_for('manageMeasurements'))
+		
+		# t = request.form['time']
+		# try:
+		# 	t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+		# except ValueError:
+		# 	try:
+		# 		t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
+		# 	except ValueError:
+		# 		flash(constants.INVALID_DATE, 'danger')
+		# 		return redirect(url_for('manageMeasurements'))
 		
 		p = float(request.form['ph'])
 		measurement = Measurement.get(t)

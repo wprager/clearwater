@@ -46,7 +46,7 @@
 	margin: 0 25px;
 }
 
-.dropdown-form input {
+.dropdown-form input, .dropdown-form select {
 	margin-bottom: 10px;
 }
 
@@ -56,4 +56,8 @@
 
 .dataTables_filter input[type=search] {
 	-webkit-appearance: searchfield;
+}
+
+#measurement-form {
+	width: 284px;
 }
