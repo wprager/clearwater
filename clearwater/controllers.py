@@ -209,6 +209,8 @@ def csvUpload():
 							p = row[1]
 							try:
 								p = float(p)
+								if not (0 <= p <= 14):
+									raise ValueError
 							except ValueError:
 								badSyntax.append(reader.line_num)
 								continue

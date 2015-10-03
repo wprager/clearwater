@@ -56,6 +56,7 @@ on measurement creation form, creation success produces 'creation success' flash
 on measurement creation form, both fields are required
 on measurement creation form, time field must to be "%Y-%m-%dT%H:%M:%S" format, else produces 'invalid format' flash
 on measurement creation form, pH should be able to accept floats
+on measurement creation form, pH should only range from 0 to 14
 on measurement creation form, time field should be able to accept 00 seconds
 on measurement creation form, invalid date produces 'invalid date' flash (e.g. Feb 30th)
 on measurement creation form, try various dates...
@@ -75,6 +76,7 @@ uploading a csv with malformatted lines adds these lines to 'bad syntax' flash
 		invalid date
 		invalid time
 		invalid datetime format
-		invalid pH number
+		non number pH
+		pH number outside range (0 - 14)
 uploading a csv with measurements at already taken times adds these lines to 'time taken' flash
 uploading a csv with malformatted lines and measurements at already taken times still succeeds in adding the valid entries

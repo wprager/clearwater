@@ -89,7 +89,7 @@
 				{# TODO: detect if datetime-local works and show this if so:
 				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus> #}
 				<label for="ph">pH</label>
-				<input id="ph" class="form-control" type="number" step="any" name="ph" placeholder="pH" required>
+				<input id="ph" class="form-control" type="number" step="any" name="ph" min="0" max="14" placeholder="pH" required>
 				<button class="btn btn-primary center-block" type="submit">Add</button>
 			</form>
 		</div>
