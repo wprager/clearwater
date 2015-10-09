@@ -9,6 +9,7 @@ import csv
 from datetime import datetime
 import json
 import md5
+import os
 from urlparse import urlparse, urljoin
 from werkzeug import secure_filename
 
@@ -161,12 +162,27 @@ def manageMeasurements():
 		# 		flash(constants.INVALID_DATE, 'danger')
 		# 		return redirect(url_for('manageMeasurements'))
 		
-		p = float(request.form['ph'])
+		ph = float(request.form['ph'])
+		do = float(request.form['do'])
+		ec = float(request.form['ec'])
+		temp = float(request.form['temp'])
+		
+		try:
+			if not (0 <= ph <=14):
+				raise ValueError(constants.INVALID_PH)
+			if not (0 <= do <= 36):
+				raise ValueError(constants.INVALID_DO)
+			if not (0 <= ec):
+				raise ValueError(constants.INVALID_EC)
+		except ValueError as e:
+			flash(e.args[0], 'danger')
+			return redirect(url_for('manageMeasurements'))
+		
 		measurement = Measurement.get(t)
 		if measurement:
 			flash(constants.TIME_TAKEN, 'danger')
 		else:
-			Measurement.create(Measurement(current_user.id, t, p))
+			Measurement.create(Measurement(current_user.id, t, ph, do, ec, temp))
 			flash(constants.MEASUREMENT_CREATE_SUCCESS, 'success')
 		return redirect(url_for('manageMeasurements'))
 
@@ -185,57 +201,73 @@ def deleteMeasurement():
 @login_required
 def csvUpload():
 	file = request.files['csv']
-	badSyntax = []
-	timeTaken = []
 	if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() == 'csv':
 		filename = secure_filename(file.filename)
 		try:
 			with open(filename, 'r') as csvFile:
 				reader = csv.reader(csvFile)
-				headers = reader.next()
-				if len(headers) == 2 and headers[0].lower() == 'time' and headers[1].lower() == 'ph':
-					for row in reader:
-						if len(row) == 2:
-							t = row[0]
-							try:
-								t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
-							except ValueError:
-								try:
-									t = datetime.strptime(t, '%Y-%m-%dT%H:%M')
-								except ValueError:
-									badSyntax.append(reader.line_num)
-									continue
-							
-							p = row[1]
-							try:
-								p = float(p)
-								if not (0 <= p <= 14):
-									raise ValueError
-							except ValueError:
-								badSyntax.append(reader.line_num)
-								continue
-							
-							measurement = Measurement.get(t)
-							if measurement:
-								timeTaken.append(reader.line_num)
-								continue
-							Measurement.create(Measurement(current_user.id, t, p))
-						else:
-							badSyntax.append(reader.line_num)
-					
-					flash(constants.CSV_UPLOAD_SUCCESS, 'success')
-					if badSyntax:
-						flash(constants.CSV_BAD_SYNTAX.format(json.dumps(badSyntax)), 'info')
-					if timeTaken:
-						flash(constants.CSV_TIME_TAKEN.format(json.dumps(timeTaken)), 'info')
-				else:
-					flash(constants.INVALID_CSV_HEADER, 'danger')
+				processRows(reader, filename)
 		except IOError:
 			flash(constants.INVALID_CSV_FILE, 'danger')
 	else:
 		flash(constants.INVALID_CSV_FILE, 'danger')
 	
 	return redirect(url_for('manageMeasurements'))
+
+def processRows(reader, filename):
+	badSyntax = []
+	timeTaken = []
+	date = os.path.splitext(filename)[0]
+	try:
+		datetime.strptime(date, '%m.%d.%y')
+	except ValueError:
+		flash(constants.INVALID_CSV_NAME, 'danger')
+		return
+	
+	for row in reader:
+		if len(row) == 5:
+			t = date + ' ' + row[0]
+			try:
+				t = datetime.strptime(t, '%m.%d.%y %H:%M:%S')
+			except ValueError:
+				try:
+					t = datetime.strptime(t, '%m.%d.%y %H:%M')
+				except ValueError:
+					badSyntax.append(reader.line_num)
+					continue
+			
+			ph = row[1]
+			do = row[2]
+			ec = row[3]
+			temp = row[4]
+			try:
+				ph = float(ph)
+				do = float(do)
+				ec = float(ec)
+				temp = float(temp)
+				if not (0 <= ph <= 14):
+					raise ValueError(constants.INVALID_PH)
+				if not (0 <= do <= 36):
+					raise ValueError(constants.INVALID_DO)
+				if not (0 <= ec):
+					raise ValueError(constants.INVALID_EC)
+			except ValueError:
+				badSyntax.append(reader.line_num)
+				continue
+			
+			measurement = Measurement.get(t)
+			if measurement:
+				timeTaken.append(reader.line_num)
+				continue
+			Measurement.create(Measurement(current_user.id, t, ph, do, ec, temp))
+		else:
+			badSyntax.append(reader.line_num)
+	
+	flash(constants.CSV_UPLOAD_SUCCESS, 'success')
+	if badSyntax:
+		flash(constants.CSV_BAD_SYNTAX.format(json.dumps(badSyntax)), 'info')
+	if timeTaken:
+		flash(constants.CSV_TIME_TAKEN.format(json.dumps(timeTaken)), 'info')
 
 
 @app.errorhandler(400)

@@ -63,12 +63,18 @@ class Measurement(Base):
 	id = Column(Integer, primary_key=True)
 	timestamp = Column(DateTime, default=datetime.datetime.now, unique=True)
 	ph = Column(Float)
+	dissolved_oxygen = Column(Float)
+	electro_conductivity = Column(Float)
+	temperature = Column(Float)
 	user_id = Column(Integer, ForeignKey('users.id'))
 	
-	def __init__(self, user_id, timestamp, ph):
+	def __init__(self, user_id, timestamp, ph, do, ec, temp):
 		self.user_id = user_id
 		self.timestamp = timestamp
 		self.ph = ph
+		self.dissolved_oxygen = do
+		self.electro_conductivity = ec
+		self.temperature = temp
 	
 	@staticmethod
 	def get(data):
@@ -92,4 +98,4 @@ class Measurement(Base):
 		s.commit()
 	
 	def __repr__(self):
-		return 'Measurement: Time: {0}, pH: {1}'.format(self.timestamp, self.ph)
+		return 'Measurement: Time: {0}, pH: {1}, DO: {2}, EC: {3}, TEMP: {4}'.format(self.timestamp, self.ph, self.do, self.ec, self.temp)

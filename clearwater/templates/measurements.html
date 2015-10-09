@@ -10,7 +10,7 @@
 				"autoWidth": false,
 				"columnDefs": [ {
 				{% if current_user.isAdmin() %}
-					"targets": [4],
+					"targets": [7],
 					"searchable": false,
 					"orderable": false
 				}, {
@@ -40,7 +40,7 @@
 				Add Measurement<span class="caret"></span>
 			</a>
 			<form id="measurement-form" class="dropdown-menu dropdown-form" action="/measurements" method="POST">
-				<div>
+				<div class="form-group">
 					<label for="month">Date: </label>
 					<select id="month" name="month" id="month" onchange="" size="1" required autofocus>
 						<option value="">--</option>
@@ -61,7 +61,8 @@
 						{% endfor %}
 					</select>
 				</div>
-				<div>
+				
+				<div class="form-group">
 					<label for="hour">Time: </label>
 					<select id="hour" name="hour" id="hour" onchange="" size="1" required>
 						<option value="">--</option>
@@ -86,10 +87,29 @@
 						<option value="pm">PM</option>
 					</select>
 				</div>
-				{# TODO: detect if datetime-local works and show this if so:
-				<input class="form-control" type="datetime-local" step="1" name="time" required autofocus> #}
-				<label for="ph">pH</label>
-				<input id="ph" class="form-control" type="number" step="any" name="ph" min="0" max="14" placeholder="pH" required>
+				
+				<div class="form-group">
+					{# TODO: detect if datetime-local works and show this if so:
+					<input class="form-control" type="datetime-local" step="1" name="time" required autofocus> #}
+					<label for="ph">pH</label>
+					<input id="ph" class="form-control" type="number" step="any" name="ph" min="0" max="14" placeholder="pH" required>
+				</div>
+				
+				<div class="form-group">
+					<label for="do">Dissolved Oxygen</label>
+					<input id="do" class="form-control" type="number" step="any" name="do" min="0" max="36" placeholder="dissolved oxygen" required>
+				</div>
+				
+				<div class="form-group">
+					<label for="ec">Electro Conductivity</label>
+					<input for="ec" class="form-control" type="number" step="any" name="ec" min="0" placeholder="electro conductivity" required>
+				</div>
+				
+				<div class="form-group">
+					<label for="temp">Temperature</label>
+					<input for="temp" class="form-control" type="number" step="any" name="temp" placeholder="temperature" required>
+				</div>
+				
 				<button class="btn btn-primary center-block" type="submit">Add</button>
 			</form>
 		</div>
@@ -107,12 +127,15 @@
 	<table class="display" id="measurements-table">
 		<thead>
 			<tr>
-				<th class="col-md-1">ID</th>
+				<th>ID</th>
 				<th>Time (Pacific)</th>
 				<th>Created by</th>
-				<th class="col-md-1">pH</th>
+				<th>pH</th>
+				<th>Dissolved Oxygen (mg/L)</th>
+				<th>Electro Conductivity (&micro;s/cm)</th>
+				<th>Temperature (&deg;F)</th>
 				{% if current_user.isAdmin() %}
-					<th class="col-md-1"></th>
+					<th></th>
 				{% endif %}
 			</tr>
 		</thead>
@@ -123,6 +146,9 @@
 					<td>{{ m.timestamp.strftime("%b %d, %Y, %I:%M:%S %p").replace(' 0', ' ') }}</td>
 					<td>{{ users[(m.user_id)] }}</td>
 					<td>{{ m.ph }}</td>
+					<td>{{ m.dissolved_oxygen }}</td>
+					<td>{{ m.electro_conductivity }}</td>
+					<td>{{ m.temperature }}</td>
 					{% if current_user.isAdmin() %}
 						<td>
 							<form id="delete-measurement" action="/measurement-delete" method="POST">

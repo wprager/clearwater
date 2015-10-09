@@ -53,30 +53,33 @@ measurement dropdown creation form has padding
 all users should be able to see measurement creation form
 on measurement creation form, existing time produces 'time taken' flash
 on measurement creation form, creation success produces 'creation success' flash
-on measurement creation form, both fields are required
-on measurement creation form, time field must to be "%Y-%m-%dT%H:%M:%S" format, else produces 'invalid format' flash
-on measurement creation form, pH should be able to accept floats
+on measurement creation form, all fields are required
+on measurement creation form, pH, DO, EC, & temp fields should be able to accept floats
 on measurement creation form, pH should only range from 0 to 14
+on measurement creation form, DO should only range from 0 to 36
+on measurement creation form, EC should only be 0 or more
 on measurement creation form, time field should be able to accept 00 seconds
 on measurement creation form, invalid date produces 'invalid date' flash (e.g. Feb 30th)
 on measurement creation form, try various dates...
+on measurement creation form, if any pH, DO, or EC invalid values are forcably submitted, produces respectful invalid flash
 deleting a measurement when not logged in as admin should produce 'not allowed' flash
 non admin shouldn't see measurement delete button
 on measurement deletion, a success produces 'deletion success' flash
 uploading an error-free csv adds the measurements to the table and produces 'upload success' flash
 uploading a non-csv file produces 'invalid csv' flash
-uploading an improper file name produces 'invalid csv' flash (e.g. ../home/test.csv)
+uploading an improper file name produces 'invalid csv file' flash (e.g. ../home/test.csv)
+uploading a file name that isn't a valid date produces 'invalid csv name' flash
 uploading a file over 16MB renders the 413 page
-uploading a csv with improper headers produces 'invalid header' flash
 uploading a csv with malformatted lines adds these lines to 'bad syntax' flash
 	examples:
-		more than 2 columns
-		less than 2 columns
+		more than 5 columns
+		less than 5 columns
 		empty row
-		invalid date
 		invalid time
-		invalid datetime format
-		non number pH
+		invalid time format
+		non number pH, DO, EC, or temp
 		pH number outside range (0 - 14)
+		DO number outside range (0 - 36)
+		EC number outside range (0+)
 uploading a csv with measurements at already taken times adds these lines to 'time taken' flash
 uploading a csv with malformatted lines and measurements at already taken times still succeeds in adding the valid entries
