@@ -13,6 +13,7 @@ import os
 from urlparse import urlparse, urljoin
 from werkzeug import secure_filename
 
+# replace this with os.urandom(24) when we can make this secret:
 app.secret_key = 'secret_key'
 lm = LoginManager()
 lm.init_app(app)
