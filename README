@@ -12,4 +12,5 @@ create local db called 'clearwater'
 > python manage.py db upgrade
 > python setup.py
 > git remote add heroku git@heroku.com:clearwater-2015.git
+> heroku keys:add
 > python run.py
