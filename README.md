@@ -1,0 +1,15 @@
+# clearwater
+site to store water measurement data
+
+Setup guide:
+> git clone https://github.com/wprager/clearwater.git
+uncomment database uri in clearwater/config.py
+create local db called 'clearwater'
+> sudo pip install virtualenv
+> virtualenv venv
+> . ./activate_venv
+> pip install -r requirements.txt
+> python manage.py db upgrade
+> python setup.py
+> git remote add heroku git@heroku.com:clearwater-2015.git
+> python run.py
