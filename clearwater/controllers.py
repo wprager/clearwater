@@ -19,6 +19,7 @@ lm = LoginManager()
 lm.init_app(app)
 
 # TODO: allow users to register?
+# TODO: minify assets
 
 # -----------------------------------------------
 # LOGIN MANAGER CONFIG
