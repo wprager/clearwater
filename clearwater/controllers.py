@@ -1,16 +1,15 @@
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
-from flask.ext.login import LoginManager, current_user, login_required, login_user, logout_user
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 
-from clearwater import app
-import constants
-from models import User, Measurement, login_serializer
+from clearwater import app, constants
+from clearwater.models import User, Measurement, login_serializer
 
 import csv
 from datetime import datetime
 import json
-import md5
+import hashlib
 import os
-from urlparse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin
 from werkzeug import secure_filename
 
 # replace this with os.urandom(24) when we can make this secret:
@@ -32,12 +31,21 @@ lm.login_message_category = 'info'
 def load_user(userid):
 	return User.get(userid)
 
-@lm.token_loader
-def load_token(token):
-	max_age = app.config['REMEMBER_COOKIE_DURATION'].total_seconds()
-	data = login_serializer.loads(token, max_age=max_age)
-	user = User.get(data[0])
-	if user and data[1] == user.password:
+# @lm.token_loader
+# def load_token(token):
+# 	max_age = app.config['REMEMBER_COOKIE_DURATION'].total_seconds()
+# 	data = login_serializer.loads(token, max_age=max_age)
+# 	user = User.get(data[0])
+# 	if user and data[1] == user.password:
+# 		return user
+# 	return None
+
+@lm.request_loader
+def load_request(request):
+	userid = request.form.get('username')
+	user = User.get(userid)
+	if user and request.form.get('password') == user.password:
+		user.is_authenticated = True
 		return user
 	return None
 
@@ -46,7 +54,7 @@ def load_token(token):
 # -----------------------------------------------
 def hash_pass(password):
 	saltedPass = password + app.secret_key
-	return md5.new(saltedPass).hexdigest()
+	return hashlib.md5(saltedPass.encode('utf-8')).hexdigest()
 
 def is_safe_url(target):
 	base_url = urlparse(request.host_url)
@@ -58,7 +66,7 @@ def is_safe_url(target):
 # -----------------------------------------------
 @app.route('/')
 def index():
-	if current_user.is_anonymous():
+	if current_user.is_anonymous:
 		return render_template('login.html', nxt=request.args.get('next'))
 	else:
 		return render_template('index.html')
@@ -120,7 +128,7 @@ def deleteUser():
 	if not current_user.isAdmin():
 		flash(constants.NOT_ALLOWED, 'danger')
 	else:
-		userid = unicode(request.form['userid'])
+		userid = int(request.form['userid'])
 		user = User.get(userid)
 		User.delete(user)
 		flash(constants.USER_DELETE_SUCCESS.format(user.username), 'success')
@@ -194,7 +202,7 @@ def deleteMeasurement():
 	if not current_user.isAdmin():
 		flash(constants.NOT_ALLOWED, 'danger')
 	else:
-		measurementid = unicode(request.form['measurementid'])
+		measurementid = str(request.form['measurementid'])
 		Measurement.delete(Measurement.get(measurementid))
 		flash(constants.MEASUREMENT_DELETE_SUCCESS, 'success')
 	return redirect(url_for('manageMeasurements'))

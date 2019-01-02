@@ -1,7 +1,6 @@
-from clearwater import app, db
-import constants
+from clearwater import app, constants, db
 import datetime
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -35,10 +34,13 @@ class User(Base, UserMixin):
 	
 	@staticmethod
 	def get(data):
-		if type(data) == unicode: # get by id
-			return s.query(User).filter(User.id.in_([data])).first()
-		elif type(data) == str: # get by username
-			return s.query(User).filter(User.username.in_([data])).first()
+		if type(data) == str:
+			# TODO: find a way to replace type == unicode without try/catch
+			try:
+				data = int(data) # get by id
+				return s.query(User).filter(User.id.in_([data])).first()
+			except ValueError: # get by username
+				return s.query(User).filter(User.username.in_([data])).first()
 	
 	@staticmethod
 	def getAll():
@@ -78,7 +80,7 @@ class Measurement(Base):
 	
 	@staticmethod
 	def get(data):
-		if type(data) == unicode: # get by id
+		if type(data) == str: # get by id
 			return s.query(Measurement).filter(Measurement.id.in_([data])).first()
 		elif type(data) == datetime.datetime: # get by timestamp
 			return s.query(Measurement).filter(Measurement.timestamp.in_([data])).first()
